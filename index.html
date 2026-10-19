@@ -24,28 +24,31 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 </style>
 </head>
 <body>
-<header><div><h1>Hunter HQ</h1><small>Household dashboard · v0.1 scaffold</small></div><small id="clock"></small></header>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.2.0</strong> · test build</small></div><small id="clock"></small></header>
 <main>
-<section class="wide"><h2>Andrew's Homework <span class="pill">Integration pending</span></h2>
+<section class="wide"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill">Integration pending</span></h2>
 <div class="stats"><div class="stat"><div class="muted">Missing</div><div class="num">—</div></div><div class="stat"><div class="muted">To-do</div><div class="num">—</div></div></div>
 <div class="tabs" role="tablist" aria-label="Homework lists"><button aria-selected="true" data-list="missing">Missing</button><button aria-selected="false" data-list="tomorrow">Due Tomorrow</button><button aria-selected="false" data-list="week">Due This Week</button></div>
 <div class="placeholder" id="homework">Connect AndrewsHWTracker to load assignments, classes, due dates, and tracker links.</div>
 </section>
-<section><h2>Fleet <span class="pill">Integration pending</span></h2>
+<section><h2>Fleet <span class="pill" data-widget-version="fleet"></span> <span class="pill">Integration pending</span></h2>
 <div class="scroll"><table><thead><tr><th>Vehicle</th><th>Status</th><th>Next maintenance</th></tr></thead><tbody id="fleet"></tbody></table></div>
 </section>
-<section><h2>DOGZ <span class="pill">Demo only</span></h2>
+<section><h2>DOGZ <span class="pill" data-widget-version="dogz"></span> <span class="pill">Demo only</span></h2>
 <p class="muted">Dog Log integration pending. An unchecked walk does not mean it wasn't done.</p>
 <div class="controls"><label for="dog">Dog:</label><select id="dog"><option>Tiggy</option><option>Chikatita</option></select><span id="dogDate"></span></div>
 <div class="dog-grid" id="doggrid"><strong></strong><strong>Morning</strong><strong>Noon</strong><strong>Night</strong></div>
 <p><small>Checkboxes are local demo state only—not written to Dog Log.</small></p>
 </section>
-<section class="wide"><h2>Fridge <span class="pill">myApron connection pending</span></h2>
+<section class="wide"><h2>Fridge <span class="pill" data-widget-version="fridge"></span> <span class="pill">myApron connection pending</span></h2>
 <p class="muted">myApron → Pantry → Fridge · Leftovers shown first</p>
 <div class="placeholder">Connect myApron Pantry to see refrigerated inventory, including leftover name, stored date, age, and quantity.</div>
 </section>
 </main>
 <script>
+const RELEASE={dashboard:'0.2.0',widgets:{homework:'0.1.0',fleet:'0.1.0',dogz:'0.1.0',fridge:'0.1.0'}};
+document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
+document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const today=()=>new Date().toLocaleDateString('en-CA');
 function clock(){document.getElementById('clock').textContent=new Date().toLocaleString();}
 clock();setInterval(clock,60000);
