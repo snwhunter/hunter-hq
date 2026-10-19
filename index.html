@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hunter HQ</title>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#101720;color:#e6edf5}
+*{box-sizing:border-box}body{margin:0;padding:24px;max-width:1500px;margin-inline:auto}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+h1{font-size:2rem;margin:0}h2{margin:0 0 14px;font-size:1.2rem}small,.muted{color:#9badbf}
+main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+section{background:#192533;border:1px solid #344458;border-radius:16px;padding:20px;min-width:0}
+.wide{grid-column:span 2}.stats{display:flex;gap:12px;margin-bottom:16px}
+.stat{flex:1;background:#243447;border-radius:12px;padding:12px}.num{font-size:2rem;font-weight:700}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+button{background:#273b50;border:1px solid #475f77;border-radius:8px;color:inherit;padding:8px 12px;cursor:pointer}
+button[aria-selected="true"]{background:#36658c;border-color:#78aee1}
+table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;padding:9px;border-bottom:1px solid #344458}
+.scroll{overflow-x:auto}.placeholder{padding:20px;color:#aabbd0;background:#223143;border-radius:10px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dog-grid{display:grid;grid-template-columns:90px repeat(3,1fr);gap:10px;align-items:center}
+.dog-grid label{display:flex;gap:7px;align-items:center}.pill{font-size:.75rem;color:#b4cae0;background:#344b63;padding:3px 8px;border-radius:12px}
+@media(max-width:800px){main{grid-template-columns:1fr}.wide{grid-column:span 1}body{padding:12px}section{padding:14px}.dog-grid{grid-template-columns:72px repeat(3,1fr);font-size:.82rem}}
+</style>
+</head>
+<body>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · v0.1 scaffold</small></div><small id="clock"></small></header>
+<main>
+<section class="wide"><h2>Andrew's Homework <span class="pill">Integration pending</span></h2>
+<div class="stats"><div class="stat"><div class="muted">Missing</div><div class="num">—</div></div><div class="stat"><div class="muted">To-do</div><div class="num">—</div></div></div>
+<div class="tabs" role="tablist" aria-label="Homework lists"><button aria-selected="true" data-list="missing">Missing</button><button aria-selected="false" data-list="tomorrow">Due Tomorrow</button><button aria-selected="false" data-list="week">Due This Week</button></div>
+<div class="placeholder" id="homework">Connect AndrewsHWTracker to load assignments, classes, due dates, and tracker links.</div>
+</section>
+<section><h2>Fleet <span class="pill">Integration pending</span></h2>
+<div class="scroll"><table><thead><tr><th>Vehicle</th><th>Status</th><th>Next maintenance</th></tr></thead><tbody id="fleet"></tbody></table></div>
+</section>
+<section><h2>DOGZ <span class="pill">Demo only</span></h2>
+<p class="muted">Dog Log integration pending. An unchecked walk does not mean it wasn't done.</p>
+<div class="controls"><label for="dog">Dog:</label><select id="dog"><option>Tiggy</option><option>Chikatita</option></select><span id="dogDate"></span></div>
+<div class="dog-grid" id="doggrid"><strong></strong><strong>Morning</strong><strong>Noon</strong><strong>Night</strong></div>
+<p><small>Checkboxes are local demo state only—not written to Dog Log.</small></p>
+</section>
+<section class="wide"><h2>Fridge <span class="pill">myApron connection pending</span></h2>
+<p class="muted">myApron → Pantry → Fridge · Leftovers shown first</p>
+<div class="placeholder">Connect myApron Pantry to see refrigerated inventory, including leftover name, stored date, age, and quantity.</div>
+</section>
+</main>
+<script>
+const today=()=>new Date().toLocaleDateString('en-CA');
+function clock(){document.getElementById('clock').textContent=new Date().toLocaleString();}
+clock();setInterval(clock,60000);
+const vehicles=['Tacoma','Acura RSX','F-350','Subaru','Highlander','Mustang Mach-E'];
+document.getElementById('fleet').innerHTML=vehicles.map(v=>'<tr><td>'+v+'</td><td class="muted">Awaiting data</td><td class="muted">Awaiting data</td></tr>').join('');
+document.querySelectorAll('[data-list]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-list]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));document.getElementById('homework').textContent='AndrewsHWTracker connection pending — '+b.textContent+' list.';}));
+const grid=document.getElementById('doggrid'),dog=document.getElementById('dog'),periods=['Morning','Noon','Night'],activities=['Walked','Fed'];
+const safeKey=()=>['hq-dogz-demo',today(),dog.value].join(':');
+function drawDog(){document.getElementById('dogDate').textContent=today();grid.querySelectorAll('[data-row]').forEach(x=>x.remove());let stored={};try{stored=JSON.parse(localStorage.getItem(safeKey())||'{}')}catch{};activities.forEach(a=>{const name=document.createElement('strong');name.dataset.row='1';name.textContent=a;grid.append(name);periods.forEach(p=>{const label=document.createElement('label');label.dataset.row='1';const input=document.createElement('input');input.type='checkbox';input.checked=!!stored[a+'-'+p];input.setAttribute('aria-label',dog.value+' '+a+' '+p);input.addEventListener('change',()=>{stored[a+'-'+p]=input.checked;localStorage.setItem(safeKey(),JSON.stringify(stored))});label.append(input,document.createTextNode('Done'));grid.append(label)})})}
+dog.addEventListener('change',drawDog);drawDog();setInterval(()=>{if(document.getElementById('dogDate').textContent!==today())drawDog()},60000);
+</script>
+</body></html>
