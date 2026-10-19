@@ -21,6 +21,28 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 .dog-grid{display:grid;grid-template-columns:90px repeat(3,1fr);gap:10px;align-items:center}
 .dog-grid label{display:flex;gap:7px;align-items:center}.pill{font-size:.75rem;color:#b4cae0;background:#344b63;padding:3px 8px;border-radius:12px}
 @media(max-width:800px){main{grid-template-columns:1fr}.wide{grid-column:span 1}body{padding:12px}section{padding:10px}.dog-grid{grid-template-columns:72px repeat(3,1fr);font-size:.82rem}}
+
+/* Desktop control panel: all four widgets within one viewport. Overflow stays inside cards. */
+@media(min-width:801px){
+ body{max-width:none;width:100%;height:100dvh;overflow:hidden;padding:10px 14px;display:flex;flex-direction:column}
+ body>header{flex:0 0 auto;margin-bottom:7px;align-items:center}
+ body>header>div{display:flex;align-items:baseline;gap:12px}
+ main{flex:1;min-height:0;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:minmax(0,1.45fr) minmax(0,1fr);gap:8px}
+ main>section{min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:10px}
+ main>section.wide{grid-column:span 1}
+ [data-widget="homework"]{grid-column:1;grid-row:1}
+ [data-widget="fleet"]{grid-column:2;grid-row:1}
+ [data-widget="dogz"]{grid-column:1;grid-row:2}
+ [data-widget="fridge"]{grid-column:2;grid-row:2}
+ [data-widget="homework"] .stats{flex:0 0 auto}
+ [data-widget="homework"] h3{font-size:.86rem;margin:5px 0 3px}
+ [data-widget="homework"] #dueNow,[data-widget="homework"] #dueWeek{min-height:0;overflow:auto;flex:1 1 0}
+ [data-widget="homework"] p{margin:4px 0;font-size:.82rem}
+ [data-widget="homework"] footer{margin-top:4px;padding-top:3px;flex:0 0 auto}
+ section>.scroll{min-height:0;overflow:auto}
+ td,th{padding:5px 7px}
+ .stats{gap:7px;margin-bottom:3px}.stat{padding:5px 9px}.num{font-size:1.25rem}
+}
 </style>
 </head>
 <body>
@@ -47,7 +69,7 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 </section>
 </main>
 <script>
-const RELEASE={dashboard:'0.3.1',widgets:{homework:'0.2.1',fleet:'0.1.1',dogz:'0.1.1',fridge:'0.1.1'}};
+const RELEASE={dashboard:'0.4.0',widgets:{homework:'0.3.0',fleet:'0.1.2',dogz:'0.1.2',fridge:'0.1.2'}};
 document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
 document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const widgetState={};
@@ -63,8 +85,9 @@ function updateWidgetMeta(id,{refreshed=false,data,changedAt}={}){
  }
  if(changedAt)previous.changeAt=changedAt;
  widgetState[id]=previous;
- card.querySelector('[data-meta="refresh"]').textContent=previous.refreshAt?stamp(previous.refreshAt):'Not connected';
- card.querySelector('[data-meta="change"]').textContent=previous.changeAt?stamp(previous.changeAt):'Unknown';
+ const refreshNode=card.querySelector('[data-meta="refresh"]'),changeNode=card.querySelector('[data-meta="change"]');
+ if(refreshNode)refreshNode.textContent=previous.refreshAt?stamp(previous.refreshAt):'Not connected';
+ if(changeNode)changeNode.textContent=previous.changeAt?stamp(previous.changeAt):'Unknown';
 }
 const today=()=>new Date().toLocaleDateString('en-CA');
 function clock(){document.getElementById('clock').textContent=new Date().toLocaleString();}
