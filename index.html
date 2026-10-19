@@ -60,16 +60,16 @@ const HOMEWORK_LINK='https://snwhunter.github.io/AndrewsHWTracker/?Student=0001'
 function hwDay(v){
   if(!v)return null;
   const s=String(v);
-  let m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if(m)return new Date(+m[1],+m[2]-1,+m[3]);
-  m=s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
   if(m)return new Date(+(m[3].length===2?'20'+m[3]:m[3]),+m[1]-1,+m[2]);
   const d=new Date(s);return isNaN(d)?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
 }
 function hwComplete(r){
   const status=String(r.Andrew??r.Student??'').toLowerCase();
   const canvas=String(r.Canvas??'').toLowerCase();
-  const graded=canvas.match(/graded\\s*>?\\s*(\\d+(?:\\.\\d+)?)\\s*\\/\\s*(\\d+(?:\\.\\d+)?)/);
+  const graded=canvas.match(/graded\s*>?\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
   return String(r.Verified).toLowerCase()==='true' ||
     (graded && +graded[2]>0 && +graded[1]/+graded[2]>=.8) ||
     canvas.includes('submitted') || ['completed','submitted'].includes(status);
