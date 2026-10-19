@@ -24,12 +24,13 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 </style>
 </head>
 <body>
-<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.2.0</strong> · test build</small></div><small id="clock"></small></header>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.3.0</strong> · test build</small></div><small id="clock"></small></header>
 <main>
-<section class="wide"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill">Integration pending</span></h2>
-<div class="stats"><div class="stat"><div class="muted">Missing</div><div class="num">—</div></div><div class="stat"><div class="muted">To-do</div><div class="num">—</div></div></div>
-<div class="tabs" role="tablist" aria-label="Homework lists"><button aria-selected="true" data-list="missing">Missing</button><button aria-selected="false" data-list="tomorrow">Due Tomorrow</button><button aria-selected="false" data-list="week">Due This Week</button></div>
-<div class="placeholder" id="homework">Connect AndrewsHWTracker to load assignments, classes, due dates, and tracker links.</div>
+<section class="wide"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill" id="homeworkStatus">Loading</span></h2>
+<div class="stats"><div class="stat"><div class="muted">Missing (overdue)</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Due Now</div><div class="num" id="dueNowCount">—</div></div></div>
+<h3>Due Now <small>Overdue, today, or tomorrow</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
+<h3>Due This Week <small>Remaining assignments through Saturday</small></h3><div id="dueWeek" class="scroll">Loading homework…</div>
+<p><small id="homeworkUpdated"></small> · <a href="https://github.com/snwhunter/AndrewsHWTracker" target="_blank" rel="noopener noreferrer">Andrew's Homework Tracker</a></p>
 </section>
 <section><h2>Fleet <span class="pill" data-widget-version="fleet"></span> <span class="pill">Integration pending</span></h2>
 <div class="scroll"><table><thead><tr><th>Vehicle</th><th>Status</th><th>Next maintenance</th></tr></thead><tbody id="fleet"></tbody></table></div>
@@ -46,7 +47,7 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 </section>
 </main>
 <script>
-const RELEASE={dashboard:'0.2.0',widgets:{homework:'0.1.0',fleet:'0.1.0',dogz:'0.1.0',fridge:'0.1.0'}};
+const RELEASE={dashboard:'0.3.0',widgets:{homework:'0.2.0',fleet:'0.1.0',dogz:'0.1.0',fridge:'0.1.0'}};
 document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
 document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const today=()=>new Date().toLocaleDateString('en-CA');
@@ -54,7 +55,66 @@ function clock(){document.getElementById('clock').textContent=new Date().toLocal
 clock();setInterval(clock,60000);
 const vehicles=['Tacoma','Acura RSX','F-350','Subaru','Highlander','Mustang Mach-E'];
 document.getElementById('fleet').innerHTML=vehicles.map(v=>'<tr><td>'+v+'</td><td class="muted">Awaiting data</td><td class="muted">Awaiting data</td></tr>').join('');
-document.querySelectorAll('[data-list]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-list]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));document.getElementById('homework').textContent='AndrewsHWTracker connection pending — '+b.textContent+' list.';}));
+const HOMEWORK_API="https://script.google.com/macros/s/AKfycbxtV0hB9582D511FEqV-jjWZ3fqRInNTYSdMiB2npYDYWB_5j_5PcungZVlkroVZRyL/exec";
+const HOMEWORK_LINK='https://github.com/snwhunter/AndrewsHWTracker/blob/main/index.html?Student=0001';
+function hwDay(v){
+  if(!v)return null;
+  const s=String(v);
+  let m=s.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);
+  if(m)return new Date(+m[1],+m[2]-1,+m[3]);
+  m=s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{2,4})$/);
+  if(m)return new Date(+(m[3].length===2?'20'+m[3]:m[3]),+m[1]-1,+m[2]);
+  const d=new Date(s);return isNaN(d)?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
+}
+function hwComplete(r){
+  const status=String(r.Andrew??r.Student??'').toLowerCase();
+  const canvas=String(r.Canvas??'').toLowerCase();
+  const graded=canvas.match(/graded\\s*>?\\s*(\\d+(?:\\.\\d+)?)\\s*\\/\\s*(\\d+(?:\\.\\d+)?)/);
+  return String(r.Verified).toLowerCase()==='true' ||
+    (graded && +graded[2]>0 && +graded[1]/+graded[2]>=.8) ||
+    canvas.includes('submitted') || ['completed','submitted'].includes(status);
+}
+function hwRender(rows,target){
+  const node=document.getElementById(target);
+  node.replaceChildren();
+  if(!rows.length){node.textContent='Nothing outstanding.';return;}
+  const table=document.createElement('table');
+  const head=document.createElement('thead');
+  const tr=document.createElement('tr');
+  ['Due','Class','Assignment'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.append(th)});head.append(tr);table.append(head);
+  const body=document.createElement('tbody');
+  for(const r of rows){
+    const tr=document.createElement('tr');
+    const due=document.createElement('td');due.textContent=r.date.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const cls=document.createElement('td');cls.textContent=r.row.Class||'';
+    const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';title.append(a);tr.append(due,cls,title);body.append(tr);
+  }table.append(body);node.append(table);
+}
+async function loadHomework(){
+  const status=document.getElementById('homeworkStatus');
+  try{
+    const res=await fetch(HOMEWORK_API,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();if(!Array.isArray(json.data))throw new Error('Missing assignment array');
+    const today=new Date();today.setHours(0,0,0,0);
+    const tomorrow=new Date(today);tomorrow.setDate(today.getDate()+1);
+    const saturday=new Date(today);saturday.setDate(today.getDate()+((6-today.getDay()+7)%7));
+    const open=json.data.filter(r=>!hwComplete(r)).map(row=>({row,date:hwDay(row.Date)})).filter(r=>r.date);
+    const sort=(a,b)=>a.date-b.date||String(a.row.Class||'').localeCompare(String(b.row.Class||''));
+    const now=open.filter(r=>r.date<=tomorrow).sort(sort);
+    const week=open.filter(r=>r.date>tomorrow && r.date<=saturday).sort(sort);
+    document.getElementById('missingCount').textContent=open.filter(r=>r.date<today).length;
+    document.getElementById('dueNowCount').textContent=now.length;
+    hwRender(now,'dueNow');hwRender(week,'dueWeek');
+    status.textContent='Live';
+    document.getElementById('homeworkUpdated').textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  }catch(e){
+    status.textContent='Connection error';
+    document.getElementById('dueNow').textContent='Unable to load assignments from the tracker.';
+    document.getElementById('dueWeek').textContent='Check the tracker connection and refresh.';
+    document.getElementById('homeworkUpdated').textContent=String(e.message||e);
+  }
+}
+loadHomework();setInterval(loadHomework,5*60*1000);
 const grid=document.getElementById('doggrid'),dog=document.getElementById('dog'),periods=['Morning','Noon','Night'],activities=['Walked','Fed'];
 const safeKey=()=>['hq-dogz-demo',today(),dog.value].join(':');
 function drawDog(){document.getElementById('dogDate').textContent=today();grid.querySelectorAll('[data-row]').forEach(x=>x.remove());let stored={};try{stored=JSON.parse(localStorage.getItem(safeKey())||'{}')}catch{};activities.forEach(a=>{const name=document.createElement('strong');name.dataset.row='1';name.textContent=a;grid.append(name);periods.forEach(p=>{const label=document.createElement('label');label.dataset.row='1';const input=document.createElement('input');input.type='checkbox';input.checked=!!stored[a+'-'+p];input.setAttribute('aria-label',dog.value+' '+a+' '+p);input.addEventListener('change',()=>{stored[a+'-'+p]=input.checked;localStorage.setItem(safeKey(),JSON.stringify(stored))});label.append(input,document.createTextNode('Done'));grid.append(label)})})}
