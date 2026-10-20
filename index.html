@@ -22,46 +22,45 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 .dog-grid label{display:flex;gap:7px;align-items:center}.pill{font-size:.75rem;color:#b4cae0;background:#344b63;padding:3px 8px;border-radius:12px}
 @media(max-width:800px){main{grid-template-columns:1fr}.wide{grid-column:span 1}body{padding:12px}section{padding:10px}.dog-grid{grid-template-columns:72px repeat(3,1fr);font-size:.82rem}}
 
-/* Fixed desktop board: four equal columns, three equal rows. Unused cells stay empty. */
-@media(min-width:801px){
- body{max-width:none;width:100%;height:100dvh;overflow:hidden;padding:10px 14px;display:flex;flex-direction:column}
- body>header{flex:0 0 auto;margin-bottom:7px;align-items:center}
- body>header>div{display:flex;align-items:baseline;gap:12px}
- main{flex:1;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:8px}
- main>section{min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:10px}
- main>section[data-widget]{overflow:auto}
- .dog-grid{grid-template-columns:58px repeat(3,minmax(0,1fr));gap:6px;font-size:.8rem}
- .dog-grid label{gap:3px}
- section p{margin:6px 0;font-size:.85rem}
- .controls{gap:6px;font-size:.85rem}
- .pill{font-size:.65rem;padding:2px 5px}
- [data-widget="homework"]{grid-column:1 / span 2;grid-row:1 / span 2}
- [data-widget="fleet"]{grid-column:3 / span 2;grid-row:1}
- [data-widget="dogz"]{grid-column:3;grid-row:2}
- [data-widget="fridge"]{grid-column:4;grid-row:2}
- [data-widget="homework"] .stats{flex:0 0 auto}
- [data-widget="homework"] h3{font-size:.86rem;margin:5px 0 3px}
- [data-widget="homework"] #dueNow,[data-widget="homework"] #dueWeek{min-height:0;overflow:auto;flex:1 1 0}
- [data-widget="homework"] p{margin:4px 0;font-size:.82rem}
- [data-widget="homework"] footer{margin-top:4px;padding-top:3px;flex:0 0 auto}
- section>.scroll{min-height:0;overflow:auto}
- td,th{padding:5px 7px}
- .stats{gap:7px;margin-bottom:3px}.stat{padding:5px 9px}.num{font-size:1.25rem}
-}
-.calendar-frame{display:block;width:100%;height:260px;min-height:0;border:0;border-radius:6px;background:white;color-scheme:light}
-.calendar-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.calendar-heading a{margin-left:auto;font-size:.75rem;color:#b4cae0}
-@media(min-width:801px){[data-widget="calendar"]{grid-column:1 / span 2;grid-row:3}[data-widget="calendar"] .calendar-frame{flex:1;height:100%}[data-widget="calendar"] h2{flex:0 0 auto}[data-widget="calendar"] p{flex:0 0 auto;font-size:.7rem}}
+/* 1920x1080 reference board: four 466px columns and three 330px rows. */
+body{max-width:none;padding:10px 14px;overflow:auto}
+body>header{margin-bottom:7px;align-items:center}body>header>div{display:flex;gap:12px;align-items:baseline}
+main{display:grid;grid-template-columns:repeat(4,466px);grid-auto-rows:330px;gap:8px;align-content:start;justify-content:start}
+main>section{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:10px}
+.wide{grid-column:auto}
+[data-widget="calendar"]{grid-column:1;grid-row:1 / span 3}
+section>.scroll{min-height:0;overflow:auto;flex:1}
+section p{margin:5px 0;font-size:.78rem}h2{font-size:.95rem;margin-bottom:6px}h3{font-size:.8rem;margin:4px 0}
+.pill{font-size:.6rem;padding:2px 5px}.stats{gap:6px;margin-bottom:4px}.stat{min-width:0;padding:4px 8px}.stat .muted{font-size:.75rem}.num{font-size:1.3rem}
+.widget-meta{font-size:.62rem;margin-top:3px;padding-top:3px;gap:8px}
+[data-widget="homework"] table{table-layout:fixed;width:30ch;max-width:100%;font-size:.8rem}
+[data-widget="homework"] th:nth-child(1){width:7ch}[data-widget="homework"] th:nth-child(2){width:7ch}[data-widget="homework"] th:nth-child(3){width:16ch}
+[data-widget="homework"] td,[data-widget="homework"] th{padding:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[data-widget="homework"] td a{display:block;overflow:hidden;text-overflow:ellipsis;color:#b9dbff}
+[data-widget="homework"] tr.missing{background:#4c2930;color:#ffd1d6}[data-widget="homework"] tr.missing td:first-child{border-left:3px solid #ff8797}
+.dog-grid{grid-template-columns:58px repeat(3,minmax(0,1fr));gap:6px;font-size:.8rem}.dog-grid label{gap:3px}
+td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.calendar-heading a{margin-left:auto;font-size:.7rem;color:#b4cae0}
+#calendarDays{display:flex;flex-direction:column;flex:1;min-height:0;overflow:auto;gap:8px}.calendar-day{padding:10px;background:#223143;border-radius:8px;flex:1;min-height:100px}.calendar-day:first-child{flex:2;border-left:3px solid #78aee1}.calendar-day h3{font-size:.9rem;margin:0 0 8px}.calendar-day p{color:#9badbf}.calendar-event{margin:6px 0;font-size:.85rem}.calendar-event time{color:#b4cae0;margin-right:8px}
+.calendar-frame{width:100%;height:500px;border:0;background:white}details{font-size:.75rem}summary{cursor:pointer}
+@media(min-width:1921px){main{grid-template-columns:repeat(auto-fill,466px)}}
+@media(max-width:1919px){main{grid-template-columns:repeat(3,466px)}}
+@media(max-width:1441px){main{grid-template-columns:repeat(2,466px)}}
+@media(max-width:967px){main{grid-template-columns:minmax(0,466px)}[data-widget="calendar"]{grid-row:auto;height:1006px}body>header>div{flex-wrap:wrap;gap:4px}}
 </style>
 </head>
 <body>
-<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.5.0</strong> · test build</small></div><small id="clock"></small></header>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.6.0</strong> · test build</small></div><small id="clock"></small></header>
 <main>
+<section class="wide" data-widget="calendar">
+<h2 class="calendar-heading">HunterHome <span class="pill" data-widget-version="calendar"></span><a href="https://calendar.google.com/calendar/u/?authuser=hunterhomephone%40gmail.com" target="_blank" rel="noopener noreferrer">Open calendar / sign in</a></h2>
+<div id="calendarDays"></div>
+<p id="calendarStatus" class="muted">Custom agenda connection pending. Use the connected Google agenda below for events.</p>
+<details><summary>Connected Google agenda</summary><iframe class="calendar-frame" title="HunterHome combined calendar agenda" src="https://calendar.google.com/calendar/embed?mode=AGENDA&amp;ctz=America%2FLos_Angeles&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=1&amp;showTz=0&amp;src=hunterhomephone%40gmail.com&amp;src=en.usa%23holiday%40group.v.calendar.google.com&amp;src=udj8373fglv21gk5p79joh1fijktglid%40import.calendar.google.com&amp;src=mvdib00qk0kkgg4ceqa2sv2t2r2o29d3%40import.calendar.google.com" referrerpolicy="strict-origin-when-cross-origin"></iframe></details></section>
 <section class="wide" data-widget="homework"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill" id="homeworkStatus">Loading</span></h2>
-<div class="stats"><div class="stat"><div class="muted">Missing (overdue)</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Due Now</div><div class="num" id="dueNowCount">—</div></div></div>
+<div class="stats"><div class="stat"><div class="muted">Missing</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Due Now</div><div class="num" id="dueNowCount">—</div></div><div class="stat" title="After tomorrow, before Saturday"><div class="muted">Due soon</div><div class="num" id="dueSoonCount">—</div></div></div>
 <h3>Due Now <small>Overdue, today, or tomorrow</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
-<h3>Due This Week <small>Remaining assignments through Saturday</small></h3><div id="dueWeek" class="scroll">Loading homework…</div>
-<p><small id="homeworkUpdated"></small> · <a href="https://github.com/snwhunter/AndrewsHWTracker" target="_blank" rel="noopener noreferrer">Andrew's Homework Tracker</a></p>
+
+<p><small id="homeworkUpdated"></small> · <a href="https://snwhunter.github.io/AndrewsHWTracker/?Student=0001" target="_blank" rel="noopener noreferrer">Andrew's Homework Tracker</a></p>
 <footer class="widget-meta" aria-live="polite"><span>Last refresh: <time data-meta="refresh">Not connected</time></span><span>Last change: <time data-meta="change">Unknown</time></span></footer></section>
 <section data-widget="fleet"><h2>Fleet <span class="pill" data-widget-version="fleet"></span> <span class="pill">Integration pending</span></h2>
 <div class="scroll"><table><thead><tr><th>Vehicle</th><th>Status</th><th>Next maintenance</th></tr></thead><tbody id="fleet"></tbody></table></div>
@@ -76,14 +75,10 @@ table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{text-align:left;
 <p class="muted">myApron → Pantry → Fridge · Leftovers shown first</p>
 <div class="placeholder">Connect myApron Pantry to see refrigerated inventory, including leftover name, stored date, age, and quantity.</div>
 </section>
-<section class="wide" data-widget="calendar">
-<h2 class="calendar-heading">HunterHome <span class="pill" data-widget-version="calendar"></span><a href="https://calendar.google.com/calendar/u/?authuser=hunterhomephone%40gmail.com" target="_blank" rel="noopener noreferrer">Open calendar / sign in</a></h2>
-<iframe class="calendar-frame" title="HunterHome combined calendar agenda" src="https://calendar.google.com/calendar/embed?mode=AGENDA&amp;ctz=America%2FLos_Angeles&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=1&amp;showTz=0&amp;src=hunterhomephone%40gmail.com&amp;src=en.usa%23holiday%40group.v.calendar.google.com&amp;src=udj8373fglv21gk5p79joh1fijktglid%40import.calendar.google.com&amp;src=mvdib00qk0kkgg4ceqa2sv2t2r2o29d3%40import.calendar.google.com" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-<p class="muted">Home · Holidays · OVFA · Andrew Canvas. Private events require Google sign-in on this display.</p>
-</section>
+
 </main>
 <script>
-const RELEASE={dashboard:'0.5.0',widgets:{homework:'0.3.1',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.1.0'}};
+const RELEASE={dashboard:'0.6.0',widgets:{homework:'0.4.0',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.2.0'}};
 document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
 document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const widgetState={};
@@ -106,6 +101,18 @@ function updateWidgetMeta(id,{refreshed=false,data,changedAt}={}){
 const today=()=>new Date().toLocaleDateString('en-CA');
 function clock(){document.getElementById('clock').textContent=new Date().toLocaleString();}
 clock();setInterval(clock,60000);
+function renderCalendarDays(){
+ const holder=document.getElementById('calendarDays');holder.replaceChildren();
+ const dayString=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Los_Angeles',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+ const base=new Date(dayString+'T12:00:00');
+ for(let i=0;i<6;i++){
+  const date=new Date(base);date.setDate(base.getDate()+i);
+  const day=document.createElement('div');day.className='calendar-day';
+  const heading=document.createElement('h3');heading.textContent=(i===0?'Today · ':'')+date.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+  const note=document.createElement('p');note.textContent='See connected Google agenda';day.append(heading,note);holder.append(day);
+ }
+}
+renderCalendarDays();setInterval(renderCalendarDays,60000);
 const vehicles=['Tacoma','Acura RSX','F-350','Subaru','Highlander','Mustang Mach-E'];
 document.getElementById('fleet').innerHTML=vehicles.map(v=>'<tr><td>'+v+'</td><td class="muted">Awaiting data</td><td class="muted">Awaiting data</td></tr>').join('');
 const HOMEWORK_API="https://script.google.com/macros/s/AKfycbxtV0hB9582D511FEqV-jjWZ3fqRInNTYSdMiB2npYDYWB_5j_5PcungZVlkroVZRyL/exec";
@@ -138,9 +145,10 @@ function hwRender(rows,target){
   const body=document.createElement('tbody');
   for(const r of rows){
     const tr=document.createElement('tr');
+    if(r.missing){tr.className='missing';tr.title='Missing assignment';tr.setAttribute('aria-label','Missing assignment');}
     const due=document.createElement('td');due.textContent=r.date.toLocaleDateString(undefined,{month:'short',day:'numeric'});
-    const cls=document.createElement('td');cls.textContent=r.row.Class||'';
-    const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';title.append(a);tr.append(due,cls,title);body.append(tr);
+    const cls=document.createElement('td');cls.textContent=String(r.row.Class||'').split('-')[0].trim();cls.title=r.row.Class||'';cls.tabIndex=0;
+    const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';a.title=a.textContent;title.title=a.textContent;title.append(a);tr.append(due,cls,title);body.append(tr);
   }table.append(body);node.append(table);
 }
 async function loadHomework(){
@@ -151,20 +159,21 @@ async function loadHomework(){
     const today=new Date();today.setHours(0,0,0,0);
     const tomorrow=new Date(today);tomorrow.setDate(today.getDate()+1);
     const saturday=new Date(today);saturday.setDate(today.getDate()+((6-today.getDay()+7)%7));
-    const open=json.data.filter(r=>!hwComplete(r)).map(row=>({row,date:hwDay(row.Date)})).filter(r=>r.date);
+    const open=json.data.filter(r=>!hwComplete(r)).map(row=>({row,date:hwDay(row.Date)})).filter(r=>r.date).map(r=>({...r,missing:r.date<today}));
     const sort=(a,b)=>a.date-b.date||String(a.row.Class||'').localeCompare(String(b.row.Class||''));
     const now=open.filter(r=>r.date<=tomorrow).sort(sort);
-    const week=open.filter(r=>r.date>tomorrow && r.date<=saturday).sort(sort);
+    const week=open.filter(r=>r.date>tomorrow && r.date<saturday).sort(sort);
     document.getElementById('missingCount').textContent=open.filter(r=>r.date<today).length;
     document.getElementById('dueNowCount').textContent=now.length;
-    hwRender(now,'dueNow');hwRender(week,'dueWeek');
+    document.getElementById('dueSoonCount').textContent=week.length;
+    hwRender(now,'dueNow');
     updateWidgetMeta('homework',{refreshed:true,data:json.data.map(r=>[r.UID,r.Date,r.Class,r.Assignment,r.Andrew,r.Verified,r.Canvas])});
     status.textContent='Live';
     document.getElementById('homeworkUpdated').textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
   }catch(e){
     status.textContent='Connection error';
     document.getElementById('dueNow').textContent='Unable to load assignments from the tracker.';
-    document.getElementById('dueWeek').textContent='Check the tracker connection and refresh.';
+    ['missingCount','dueNowCount','dueSoonCount'].forEach(id=>document.getElementById(id).textContent='—');
     document.getElementById('homeworkUpdated').textContent=String(e.message||e);
   }
 }
