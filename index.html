@@ -33,8 +33,8 @@ section>.scroll{min-height:0;overflow:auto;flex:1}
 section p{margin:5px 0;font-size:.78rem}h2{font-size:.95rem;margin-bottom:6px}h3{font-size:.8rem;margin:4px 0}
 .pill{font-size:.6rem;padding:2px 5px}.stats{gap:6px;margin-bottom:4px}.stat{min-width:0;padding:4px 8px}.stat .muted{font-size:.75rem}.num{font-size:1.3rem}
 .widget-meta{font-size:.62rem;margin-top:3px;padding-top:3px;gap:8px}
-[data-widget="homework"] table{table-layout:fixed;width:30ch;max-width:100%;font-size:.8rem}
-[data-widget="homework"] th:nth-child(1){width:7ch}[data-widget="homework"] th:nth-child(2){width:7ch}[data-widget="homework"] th:nth-child(3){width:16ch}
+[data-widget="homework"] table{table-layout:fixed;width:100%;max-width:none;font-size:.8rem}
+[data-widget="homework"] th:nth-child(1){width:14%}[data-widget="homework"] th:nth-child(2){width:16%}[data-widget="homework"] th:nth-child(3){width:48%}[data-widget="homework"] th:nth-child(4){width:22%}
 [data-widget="homework"] td,[data-widget="homework"] th{padding:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 [data-widget="homework"] td a{display:block;overflow:hidden;text-overflow:ellipsis;color:#b9dbff}
 [data-widget="homework"] tr.missing{background:#4c2930;color:#ffd1d6}[data-widget="homework"] tr.missing td:first-child{border-left:3px solid #ff8797}
@@ -49,7 +49,7 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 </style>
 </head>
 <body>
-<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.6.0</strong> · test build</small></div><small id="clock"></small></header>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.6.1</strong> · test build</small></div><small id="clock"></small></header>
 <main>
 <section class="wide" data-widget="calendar">
 <h2 class="calendar-heading">HunterHome <span class="pill" data-widget-version="calendar"></span><a href="https://calendar.google.com/calendar/u/?authuser=hunterhomephone%40gmail.com" target="_blank" rel="noopener noreferrer">Open calendar / sign in</a></h2>
@@ -57,8 +57,8 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 <p id="calendarStatus" class="muted">Custom agenda connection pending. Use the connected Google agenda below for events.</p>
 <details><summary>Connected Google agenda</summary><iframe class="calendar-frame" title="HunterHome combined calendar agenda" src="https://calendar.google.com/calendar/embed?mode=AGENDA&amp;ctz=America%2FLos_Angeles&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=1&amp;showTz=0&amp;src=hunterhomephone%40gmail.com&amp;src=en.usa%23holiday%40group.v.calendar.google.com&amp;src=udj8373fglv21gk5p79joh1fijktglid%40import.calendar.google.com&amp;src=mvdib00qk0kkgg4ceqa2sv2t2r2o29d3%40import.calendar.google.com" referrerpolicy="strict-origin-when-cross-origin"></iframe></details></section>
 <section class="wide" data-widget="homework"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill" id="homeworkStatus">Loading</span></h2>
-<div class="stats"><div class="stat"><div class="muted">Missing</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Due Now</div><div class="num" id="dueNowCount">—</div></div><div class="stat" title="After tomorrow, before Saturday"><div class="muted">Due soon</div><div class="num" id="dueSoonCount">—</div></div></div>
-<h3>Due Now <small>Overdue, today, or tomorrow</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
+<div class="stats"><div class="stat"><div class="muted">Late</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Now</div><div class="num" id="dueNowCount">—</div></div><div class="stat" title="After tomorrow, before Saturday"><div class="muted">Upcoming</div><div class="num" id="dueSoonCount">—</div></div></div>
+<h3>Assignments <small>Late, Now, Upcoming</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
 
 <p><small id="homeworkUpdated"></small> · <a href="https://snwhunter.github.io/AndrewsHWTracker/?Student=0001" target="_blank" rel="noopener noreferrer">Andrew's Homework Tracker</a></p>
 <footer class="widget-meta" aria-live="polite"><span>Last refresh: <time data-meta="refresh">Not connected</time></span><span>Last change: <time data-meta="change">Unknown</time></span></footer></section>
@@ -78,7 +78,7 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 
 </main>
 <script>
-const RELEASE={dashboard:'0.6.0',widgets:{homework:'0.4.0',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.2.0'}};
+const RELEASE={dashboard:'0.6.1',widgets:{homework:'0.4.1',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.2.0'}};
 document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
 document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const widgetState={};
@@ -141,14 +141,14 @@ function hwRender(rows,target){
   const table=document.createElement('table');
   const head=document.createElement('thead');
   const tr=document.createElement('tr');
-  ['Due','Class','Assignment'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.append(th)});head.append(tr);table.append(head);
+  ['Due','Class','Assignment','Status'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.append(th)});head.append(tr);table.append(head);
   const body=document.createElement('tbody');
   for(const r of rows){
     const tr=document.createElement('tr');
     if(r.missing){tr.className='missing';tr.title='Missing assignment';tr.setAttribute('aria-label','Missing assignment');}
     const due=document.createElement('td');due.textContent=r.date.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     const cls=document.createElement('td');cls.textContent=String(r.row.Class||'').split('-')[0].trim();cls.title=r.row.Class||'';cls.tabIndex=0;
-    const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';a.title=a.textContent;title.title=a.textContent;title.append(a);tr.append(due,cls,title);body.append(tr);
+    const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';a.title=a.textContent;title.title=a.textContent;title.append(a);const studentStatus=document.createElement('td');studentStatus.textContent=String(r.row.Andrew??r.row.Student??'—');studentStatus.title=studentStatus.textContent;tr.append(due,cls,title,studentStatus);body.append(tr);
   }table.append(body);node.append(table);
 }
 async function loadHomework(){
@@ -157,16 +157,14 @@ async function loadHomework(){
     const res=await fetch(HOMEWORK_API,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
     const json=await res.json();if(!Array.isArray(json.data))throw new Error('Missing assignment array');
     const today=new Date();today.setHours(0,0,0,0);
-    const tomorrow=new Date(today);tomorrow.setDate(today.getDate()+1);
-    const saturday=new Date(today);saturday.setDate(today.getDate()+((6-today.getDay()+7)%7));
     const open=json.data.filter(r=>!hwComplete(r)).map(row=>({row,date:hwDay(row.Date)})).filter(r=>r.date).map(r=>({...r,missing:r.date<today}));
     const sort=(a,b)=>a.date-b.date||String(a.row.Class||'').localeCompare(String(b.row.Class||''));
-    const now=open.filter(r=>r.date<=tomorrow).sort(sort);
-    const week=open.filter(r=>r.date>tomorrow && r.date<saturday).sort(sort);
+    const now=open.filter(r=>r.date.getTime()===today.getTime()).sort(sort);
+    const week=open.filter(r=>r.date>today).sort(sort);
     document.getElementById('missingCount').textContent=open.filter(r=>r.date<today).length;
     document.getElementById('dueNowCount').textContent=now.length;
     document.getElementById('dueSoonCount').textContent=week.length;
-    hwRender(now,'dueNow');
+    hwRender(open.sort(sort),'dueNow');
     updateWidgetMeta('homework',{refreshed:true,data:json.data.map(r=>[r.UID,r.Date,r.Class,r.Assignment,r.Andrew,r.Verified,r.Canvas])});
     status.textContent='Live';
     document.getElementById('homeworkUpdated').textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
