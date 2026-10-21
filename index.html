@@ -37,6 +37,7 @@ section p{margin:5px 0;font-size:.78rem}h2{font-size:.95rem;margin-bottom:6px}h3
 [data-widget="homework"] th:nth-child(1){width:14%}[data-widget="homework"] th:nth-child(2){width:16%}[data-widget="homework"] th:nth-child(3){width:48%}[data-widget="homework"] th:nth-child(4){width:22%}
 [data-widget="homework"] td,[data-widget="homework"] th{padding:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 [data-widget="homework"] td a{display:block;overflow:hidden;text-overflow:ellipsis;color:#b9dbff}
+[data-widget="homework"] tr.group-divider td{padding:6px 4px 4px;background:#263b50;border-top:2px solid #78aee1;color:#b4d5f5;font-size:.72rem;font-weight:700;letter-spacing:.04em}
 [data-widget="homework"] tr.missing{background:#4c2930;color:#ffd1d6}[data-widget="homework"] tr.missing td:first-child{border-left:3px solid #ff8797}
 .dog-grid{grid-template-columns:58px repeat(3,minmax(0,1fr));gap:6px;font-size:.8rem}.dog-grid label{gap:3px}
 td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.calendar-heading a{margin-left:auto;font-size:.7rem;color:#b4cae0}
@@ -49,7 +50,7 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 </style>
 </head>
 <body>
-<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.6.1</strong> · test build</small></div><small id="clock"></small></header>
+<header><div><h1>Hunter HQ</h1><small>Household dashboard · <strong id="dashboardVersion">v0.6.2</strong> · test build</small></div><small id="clock"></small></header>
 <main>
 <section class="wide" data-widget="calendar">
 <h2 class="calendar-heading">HunterHome <span class="pill" data-widget-version="calendar"></span><a href="https://calendar.google.com/calendar/u/?authuser=hunterhomephone%40gmail.com" target="_blank" rel="noopener noreferrer">Open calendar / sign in</a></h2>
@@ -57,8 +58,8 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 <p id="calendarStatus" class="muted">Custom agenda connection pending. Use the connected Google agenda below for events.</p>
 <details><summary>Connected Google agenda</summary><iframe class="calendar-frame" title="HunterHome combined calendar agenda" src="https://calendar.google.com/calendar/embed?mode=AGENDA&amp;ctz=America%2FLos_Angeles&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=1&amp;showTz=0&amp;src=hunterhomephone%40gmail.com&amp;src=en.usa%23holiday%40group.v.calendar.google.com&amp;src=udj8373fglv21gk5p79joh1fijktglid%40import.calendar.google.com&amp;src=mvdib00qk0kkgg4ceqa2sv2t2r2o29d3%40import.calendar.google.com" referrerpolicy="strict-origin-when-cross-origin"></iframe></details></section>
 <section class="wide" data-widget="homework"><h2>Andrew's Homework <span class="pill" data-widget-version="homework"></span> <span class="pill" id="homeworkStatus">Loading</span></h2>
-<div class="stats"><div class="stat"><div class="muted">Late</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Now</div><div class="num" id="dueNowCount">—</div></div><div class="stat" title="After tomorrow, before Saturday"><div class="muted">Upcoming</div><div class="num" id="dueSoonCount">—</div></div></div>
-<h3>Assignments <small>Late, Now, Upcoming</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
+<div class="stats"><div class="stat"><div class="muted">Late</div><div class="num" id="missingCount">—</div></div><div class="stat"><div class="muted">Now</div><div class="num" id="dueNowCount">—</div></div><div class="stat" title="After today through Friday 11:59 PM (Saturday 00:00 cutoff)"><div class="muted">Upcoming</div><div class="num" id="dueSoonCount">—</div></div></div>
+<h3>Assignments <small>Through Friday</small></h3><div id="dueNow" class="scroll">Loading homework…</div>
 
 <p><small id="homeworkUpdated"></small> · <a href="https://snwhunter.github.io/AndrewsHWTracker/?Student=0001" target="_blank" rel="noopener noreferrer">Andrew's Homework Tracker</a></p>
 <footer class="widget-meta" aria-live="polite"><span>Last refresh: <time data-meta="refresh">Not connected</time></span><span>Last change: <time data-meta="change">Unknown</time></span></footer></section>
@@ -78,7 +79,7 @@ td,th{padding:5px 7px}.calendar-heading{display:flex;gap:6px;align-items:center;
 
 </main>
 <script>
-const RELEASE={dashboard:'0.6.1',widgets:{homework:'0.4.1',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.2.0'}};
+const RELEASE={dashboard:'0.6.2',widgets:{homework:'0.4.2',fleet:'0.1.3',dogz:'0.1.3',fridge:'0.1.3',calendar:'0.2.0'}};
 document.getElementById('dashboardVersion').textContent='v'+RELEASE.dashboard;
 document.querySelectorAll('[data-widget-version]').forEach(node=>{node.textContent='v'+RELEASE.widgets[node.dataset.widgetVersion];node.title='Widget version';});
 const widgetState={};
@@ -143,13 +144,28 @@ function hwRender(rows,target){
   const tr=document.createElement('tr');
   ['Due','Class','Assignment','Status'].forEach(t=>{const th=document.createElement('th');th.textContent=t;tr.append(th)});head.append(tr);table.append(head);
   const body=document.createElement('tbody');
+  let upcomingDividerAdded=false;
   for(const r of rows){
+    if(r.upcoming && !upcomingDividerAdded){
+      const divider=document.createElement('tr');divider.className='group-divider';
+      const label=document.createElement('td');label.colSpan=4;label.textContent='UPCOMING';divider.append(label);body.append(divider);
+      upcomingDividerAdded=true;
+    }
     const tr=document.createElement('tr');
     if(r.missing){tr.className='missing';tr.title='Missing assignment';tr.setAttribute('aria-label','Missing assignment');}
     const due=document.createElement('td');due.textContent=r.date.toLocaleDateString(undefined,{month:'short',day:'numeric'});
     const cls=document.createElement('td');cls.textContent=String(r.row.Class||'').split('-')[0].trim();cls.title=r.row.Class||'';cls.tabIndex=0;
     const title=document.createElement('td');const a=document.createElement('a');a.href=HOMEWORK_LINK;a.target='_blank';a.rel='noopener noreferrer';a.textContent=r.row.Assignment||'Untitled assignment';a.title=a.textContent;title.title=a.textContent;title.append(a);const studentStatus=document.createElement('td');studentStatus.textContent=String(r.row.Andrew??r.row.Student??'—');studentStatus.title=studentStatus.textContent;tr.append(due,cls,title,studentStatus);body.append(tr);
   }table.append(body);node.append(table);
+  requestAnimationFrame(sizeHomeworkWidget);
+}
+function sizeHomeworkWidget(){
+  const card=document.querySelector('[data-widget="homework"]');
+  const list=document.getElementById('dueNow');
+  // Measure in its normal one-cell state; grow only if the list needs more room.
+  card.style.gridRow='span 1';
+  const grows=list.scrollHeight>list.clientHeight+2;
+  card.style.gridRow=grows?'span 2':'span 1';
 }
 async function loadHomework(){
   const status=document.getElementById('homeworkStatus');
@@ -159,12 +175,15 @@ async function loadHomework(){
     const today=new Date();today.setHours(0,0,0,0);
     const open=json.data.filter(r=>!hwComplete(r)).map(row=>({row,date:hwDay(row.Date)})).filter(r=>r.date).map(r=>({...r,missing:r.date<today}));
     const sort=(a,b)=>a.date-b.date||String(a.row.Class||'').localeCompare(String(b.row.Class||''));
-    const now=open.filter(r=>r.date.getTime()===today.getTime()).sort(sort);
-    const week=open.filter(r=>r.date>today).sort(sort);
-    document.getElementById('missingCount').textContent=open.filter(r=>r.date<today).length;
-    document.getElementById('dueNowCount').textContent=now.length;
+    // Saturday at 00:00 is exclusive; the list includes only overdue and this week's work.
+    const saturday=new Date(today);
+    saturday.setDate(today.getDate() + ((6-today.getDay()+7)%7 || 7));
+    const current=open.filter(r=>r.date<=today).sort(sort);
+    const week=open.filter(r=>r.date>today && r.date<saturday).sort(sort);
+    document.getElementById('missingCount').textContent=current.filter(r=>r.missing).length;
+    document.getElementById('dueNowCount').textContent=current.length;
     document.getElementById('dueSoonCount').textContent=week.length;
-    hwRender(open.sort(sort),'dueNow');
+    hwRender([...current,...week.map(r=>({...r,upcoming:true}))],'dueNow');
     updateWidgetMeta('homework',{refreshed:true,data:json.data.map(r=>[r.UID,r.Date,r.Class,r.Assignment,r.Andrew,r.Verified,r.Canvas])});
     status.textContent='Live';
     document.getElementById('homeworkUpdated').textContent='Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
@@ -176,6 +195,7 @@ async function loadHomework(){
   }
 }
 loadHomework();setInterval(loadHomework,5*60*1000);
+window.addEventListener('resize',()=>requestAnimationFrame(sizeHomeworkWidget));
 const grid=document.getElementById('doggrid'),dog=document.getElementById('dog'),periods=['Morning','Noon','Night'],activities=['Walked','Fed'];
 const safeKey=()=>['hq-dogz-demo',today(),dog.value].join(':');
 function drawDog(){document.getElementById('dogDate').textContent=today();grid.querySelectorAll('[data-row]').forEach(x=>x.remove());let stored={};try{stored=JSON.parse(localStorage.getItem(safeKey())||'{}')}catch{};activities.forEach(a=>{const name=document.createElement('strong');name.dataset.row='1';name.textContent=a;grid.append(name);periods.forEach(p=>{const label=document.createElement('label');label.dataset.row='1';const input=document.createElement('input');input.type='checkbox';input.checked=!!stored[a+'-'+p];input.setAttribute('aria-label',dog.value+' '+a+' '+p);input.addEventListener('change',()=>{stored[a+'-'+p]=input.checked;localStorage.setItem(safeKey(),JSON.stringify(stored));updateWidgetMeta('dogz',{data:{dog:dog.value,date:today(),stored}});widgetState.dogz.changeAt=new Date().toISOString();updateWidgetMeta('dogz')});label.append(input,document.createTextNode('Done'));grid.append(label)})})}
